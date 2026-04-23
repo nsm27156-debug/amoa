@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 600" role="img" aria-label="Portrait placeholder">
+  <rect width="480" height="600" fill="#E2DACB"></rect>
+  <g fill="#0E1B2C" opacity="0.32">
+    <circle cx="240" cy="230" r="72"></circle>
+    <path d="M100 600 C 100 460, 160 400, 240 400 C 320 400, 380 460, 380 600 Z"></path>
+  </g>
+  <text x="240" y="560" text-anchor="middle" font-family="&#39;Pretendard&#39;, sans-serif" font-size="11" letter-spacing="0.25em" fill="#FCFBF8">AMBASSADOR</text>
+</svg>

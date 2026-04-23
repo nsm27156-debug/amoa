@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Gradient Compression Technology · AÉRIA</title>
+<link rel="stylesheet" href="styles/tokens.css"/>
+<link rel="icon" href="assets/wing-mark.svg"/>
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--paper);scroll-behavior:smooth}
+  body{font-family:var(--font-sans);color:var(--fg-1);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+  button{font-family:inherit;cursor:pointer}
+  img,svg{display:block;max-width:100%}
+  a{border-bottom:none}
+
+  .container{max-width:1280px;margin:0 auto;padding:0 48px}
+
+  /* ---------- Nav ---------- */
+  .nav{position:fixed;top:0;left:0;right:0;z-index:50;height:72px;display:flex;align-items:center;
+       transition:all var(--dur-base) var(--ease)}
+  .nav--over-hero{background:transparent;color:var(--white);border-bottom:1px solid rgba(255,255,255,.1)}
+  .nav--scrolled{background:rgba(246,243,238,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+                 color:var(--ink);border-bottom:1px solid var(--border-hairline)}
+  .nav__inner{width:100%;display:flex;align-items:center;justify-content:space-between}
+  .wordmark{font-family:var(--font-display);font-weight:400;font-size:24px;letter-spacing:.16em;color:inherit;
+            background:transparent;border:0;padding:0;cursor:pointer;text-decoration:none}
+  .nav__links{display:flex;gap:32px}
+  .nav__link{background:transparent;border:0;padding:4px 0;font-size:13px;letter-spacing:.02em;
+             color:inherit;opacity:.72;transition:opacity var(--dur-micro) var(--ease);cursor:pointer;text-decoration:none}
+  .nav__link:hover{opacity:1}
+  .nav__link--active{opacity:1;border-bottom:1px solid currentColor}
+  .nav__actions{display:flex;align-items:center;gap:22px;color:inherit}
+  .nav__icon{background:transparent;border:0;padding:0;color:inherit;cursor:pointer;display:inline-flex}
+  .nav__bag{position:relative}
+  .nav__bag-count{position:absolute;top:-6px;right:-8px;background:var(--amber);color:var(--white);
+                  font-family:var(--font-mono);font-size:10px;width:16px;height:16px;border-radius:999px;
+                  display:flex;align-items:center;justify-content:center}
+
+  /* ---------- Buttons ---------- */
+  .btn{display:inline-flex;align-items:center;gap:10px;border:1px solid transparent;border-radius:var(--r-2);
+       font-weight:500;letter-spacing:.02em;transition:all var(--dur-micro) var(--ease);cursor:pointer;
+       text-decoration:none;font-family:inherit}
+  .btn--lg{padding:18px 36px;font-size:15px}
+  .btn--md{padding:14px 28px;font-size:14px}
+  .btn--primary{background:var(--ink);color:var(--white)}
+  .btn--primary:hover{background:var(--navy-3)}
+  .btn--light{background:var(--white);color:var(--ink)}
+  .btn--light:hover{background:var(--paper-2)}
+  .btn--darkghost{background:transparent;color:var(--white);border-color:rgba(255,255,255,.3)}
+  .btn--darkghost:hover{border-color:var(--white)}
+  .btn:active{transform:scale(.985)}
+
+  /* ---------- Eyebrow ---------- */
+  .eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:500;color:var(--fg-3)}
+  .eyebrow--light{color:rgba(252,251,248,.6)}
+
+  /* ===================== HERO ===================== */
+  .tech-hero{position:relative;min-height:80vh;background:var(--navy);color:var(--white);
+             display:flex;align-items:flex-end;padding:0 0 96px;overflow:hidden}
+  .tech-hero__grain{position:absolute;inset:0;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+  /* Decorative gradient orbs */
+  .tech-hero__orb{position:absolute;border-radius:999px;pointer-events:none}
+  .tech-hero__orb--1{width:600px;height:600px;top:-100px;right:-120px;
+                     background:radial-gradient(circle,rgba(184,134,90,.2) 0%,rgba(26,46,74,0) 70%)}
+  .tech-hero__orb--2{width:400px;height:400px;bottom:-80px;left:10%;
+                     background:radial-gradient(circle,rgba(200,214,227,.1) 0%,rgba(26,46,74,0) 70%)}
+  .tech-hero__content{position:relative;z-index:2;width:100%;display:grid;
+                      grid-template-columns:1fr 1fr;gap:80px;align-items:end}
+  .tech-hero__left{display:flex;flex-direction:column;gap:0}
+  .tech-hero__tag{display:inline-flex;align-items:center;gap:10px;margin-bottom:24px}
+  .tech-hero__dot{width:8px;height:8px;border-radius:999px;background:var(--amber)}
+  .tech-hero__h1{font-family:var(--font-display);font-weight:300;font-size:72px;line-height:1.02;
+                 letter-spacing:-.02em;color:var(--white);margin:0 0 24px;max-width:680px}
+  .tech-hero__h1 em{font-style:normal;color:var(--amber-3)}
+  .tech-hero__desc{font-size:18px;line-height:1.62;color:rgba(252,251,248,.75);
+                   max-width:520px;margin:0 0 40px}
+  .tech-hero__actions{display:flex;gap:14px;flex-wrap:wrap}
+
+  /* Hero right: key metrics panel */
+  .tech-hero__metrics{display:flex;flex-direction:column;gap:1px;background:rgba(255,255,255,.06);
+                      border:1px solid rgba(255,255,255,.12);border-radius:var(--r-3);overflow:hidden;
+                      backdrop-filter:blur(12px)}
+  .tech-metric{padding:24px 28px;border-bottom:1px solid rgba(255,255,255,.08);
+               display:flex;align-items:center;justify-content:space-between;gap:20px}
+  .tech-metric:last-child{border-bottom:0}
+  .tech-metric__val{font-family:var(--font-display);font-size:40px;font-weight:400;color:var(--white);
+                    letter-spacing:-.02em;line-height:1}
+  .tech-metric__val em{font-style:normal;font-size:18px;color:var(--amber-3);margin-left:4px}
+  .tech-metric__label{font-size:13px;color:rgba(252,251,248,.6);line-height:1.4;text-align:right;max-width:160px}
+  .tech-metric__bar{flex-shrink:0;align-self:center}
+
+  /* ===================== SECTION: How it works ===================== */
+  .how-section{padding:112px 0;background:var(--paper)}
+  .how-section__head{margin-bottom:72px;max-width:780px}
+  .how-section__head h2{font-family:var(--font-display);font-size:52px;font-weight:400;line-height:1.08;
+                        letter-spacing:-.02em;color:var(--ink);margin:16px 0 18px}
+  .how-section__head p{font-size:17px;line-height:1.65;color:var(--fg-2)}
+
+  .how-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:80px;align-items:start}
+
+  /* Diagram */
+  .diagram{background:var(--paper-2);border-radius:var(--r-3);padding:48px 32px;
+           border:1px solid var(--border-hairline);position:sticky;top:calc(72px + 24px)}
+  .diagram__head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:24px;padding:0 8px}
+  .diagram__title{font-family:var(--font-display);font-size:22px;color:var(--ink)}
+  .diagram__sub{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;color:var(--fg-3);text-transform:uppercase}
+  .diagram__svg{width:100%;height:auto;max-height:560px}
+  .diagram__legend{display:flex;justify-content:space-between;margin-top:20px;padding:16px 8px 0;
+                   border-top:1px solid var(--border-hairline);font-size:12px;color:var(--fg-3);letter-spacing:.06em}
+  .diagram__legend strong{color:var(--ink);font-weight:500}
+
+  /* Zone explainer cards */
+  .zone-list{display:flex;flex-direction:column;gap:24px}
+  .zone-card{background:var(--white);border:1px solid var(--border-hairline);border-radius:var(--r-3);
+             padding:28px;transition:border-color var(--dur-base) var(--ease)}
+  .zone-card:hover{border-color:var(--border-line)}
+  .zone-card__header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .zone-card__name{font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;color:var(--fg-3)}
+  .zone-card__mmhg{font-family:var(--font-display);font-size:32px;font-weight:400;color:var(--ink);line-height:1}
+  .zone-card__mmhg span{font-size:14px;color:var(--fg-3);margin-left:4px;font-family:var(--font-mono)}
+  .zone-card__bar-wrap{height:4px;background:var(--paper-3);border-radius:999px;margin-bottom:14px}
+  .zone-card__bar{height:4px;border-radius:999px;background:var(--amber);transition:width .6s var(--ease)}
+  .zone-card__desc{font-size:14px;line-height:1.6;color:var(--fg-2)}
+
+  /* ===================== SECTION: Proof data ===================== */
+  .proof-section{background:var(--navy);color:var(--white);padding:120px 0;position:relative;overflow:hidden}
+  .proof-section::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:rgba(255,255,255,.1)}
+  .proof-section__head{text-align:center;margin-bottom:80px}
+  .proof-section__head h2{font-family:var(--font-display);font-weight:300;font-size:56px;line-height:1.06;
+                          letter-spacing:-.02em;color:var(--white);margin:16px 0 18px}
+  .proof-section__head p{font-size:17px;color:rgba(252,251,248,.68);max-width:560px;margin:0 auto;line-height:1.65}
+
+  /* Big number stats */
+  .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+             background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);
+             border-radius:var(--r-3);overflow:hidden;margin-bottom:80px}
+  .stat-card{background:var(--navy);padding:48px 40px;text-align:center}
+  .stat-card__num{font-family:var(--font-display);font-size:80px;font-weight:300;line-height:1;
+                  color:var(--white);letter-spacing:-.04em}
+  .stat-card__num em{font-style:normal;font-size:40px;color:var(--amber-3)}
+  .stat-card__label{font-size:14px;letter-spacing:.12em;color:rgba(252,251,248,.58);
+                    text-transform:uppercase;margin-top:16px;line-height:1.5}
+  .stat-card__sub{font-size:12px;color:rgba(252,251,248,.35);margin-top:6px;letter-spacing:.06em}
+
+  /* Study cards */
+  .study-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .study-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+              border-radius:var(--r-3);padding:28px}
+  .study-card__tag{font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+                   color:var(--amber-3);margin-bottom:14px}
+  .study-card__finding{font-family:var(--font-display);font-size:22px;font-weight:400;
+                       color:var(--white);line-height:1.2;margin-bottom:14px}
+  .study-card__detail{font-size:13px;color:rgba(252,251,248,.58);line-height:1.6}
+  .study-card__source{font-family:var(--font-mono);font-size:11px;color:rgba(252,251,248,.3);
+                      margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08)}
+
+  /* ===================== SECTION: Material ===================== */
+  .material-section{padding:112px 0;background:var(--paper-2)}
+  .material-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:80px;align-items:center}
+  .material-copy h2{font-family:var(--font-display);font-size:48px;font-weight:400;line-height:1.08;
+                    letter-spacing:-.02em;color:var(--ink);margin:16px 0 20px}
+  .material-copy p{font-size:16px;line-height:1.65;color:var(--fg-2);margin-bottom:16px;max-width:480px}
+  .cert-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+  .cert-badge{padding:8px 14px;border:1px solid var(--border-line);border-radius:var(--r-2);
+              font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:500;color:var(--fg-2);
+              background:var(--white)}
+
+  /* Material specs table-style */
+  .material-specs{background:var(--white);border-radius:var(--r-3);border:1px solid var(--border-hairline);
+                  overflow:hidden}
+  .material-row{display:grid;grid-template-columns:1fr 2fr;gap:0;border-bottom:1px solid var(--border-hairline)}
+  .material-row:last-child{border-bottom:0}
+  .material-key{padding:20px 24px;background:var(--paper);font-size:12px;letter-spacing:.14em;
+                text-transform:uppercase;font-weight:500;color:var(--fg-3);
+                border-right:1px solid var(--border-hairline);display:flex;align-items:center}
+  .material-val{padding:20px 24px;font-size:15px;color:var(--fg-1);line-height:1.5;display:flex;align-items:center}
+  .material-val strong{color:var(--ink)}
+
+  /* ===================== CTA band ===================== */
+  .tech-cta{background:var(--paper);padding:96px 0;border-top:1px solid var(--border-hairline)}
+  .tech-cta__inner{display:grid;grid-template-columns:1fr auto;align-items:center;gap:48px;
+                   padding:56px 64px;background:var(--ink);border-radius:var(--r-4)}
+  .tech-cta__h{font-family:var(--font-display);font-size:48px;font-weight:400;line-height:1.06;
+               letter-spacing:-.02em;color:var(--white);margin:8px 0 16px}
+  .tech-cta__p{font-size:16px;color:rgba(252,251,248,.65);max-width:500px;line-height:1.6}
+  .tech-cta__actions{display:flex;flex-direction:column;gap:12px;flex-shrink:0}
+
+  /* ===================== Footer ===================== */
+  .footer{background:var(--paper);border-top:1px solid var(--border-hairline);padding:96px 0 40px}
+  .footer__newsletter{display:grid;grid-template-columns:1fr 1fr;gap:96px;padding-bottom:64px;
+                      border-bottom:1px solid var(--border-hairline);margin-bottom:64px;align-items:end}
+  .footer__nl-h{font-family:var(--font-display);font-size:40px;font-weight:400;line-height:1.08;
+                letter-spacing:-.01em;margin:12px 0 0;color:var(--ink)}
+  .footer__form{display:flex;gap:12px;align-items:flex-end}
+  .footer__input{flex:1;padding:14px 0;background:transparent;border:0;border-bottom:1px solid var(--ink);
+                 font-family:var(--font-sans);font-size:16px;color:var(--ink);outline:none}
+  .footer__input::placeholder{color:var(--fg-3)}
+  .footer__cols{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:48px;margin-bottom:56px}
+  .footer__col h4{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--fg-3);
+                  font-weight:500;margin:0 0 18px}
+  .footer__col ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+  .footer__col a{font-size:13px;color:var(--ink);opacity:.86;transition:opacity var(--dur-micro) var(--ease)}
+  .footer__col a:hover{opacity:1;color:var(--amber-2)}
+  .footer__brand-logo{font-family:var(--font-display);font-size:32px;letter-spacing:.16em;color:var(--ink);margin-bottom:16px}
+  .footer__brand-p{font-size:13px;line-height:1.65;color:var(--fg-2);max-width:320px;margin-bottom:24px}
+  .footer__social{display:flex;gap:14px;color:var(--fg-2)}
+  .footer__social a{color:var(--fg-2);display:inline-flex;transition:color var(--dur-micro) var(--ease)}
+  .footer__social a:hover{color:var(--ink)}
+  .footer__bottom{display:flex;justify-content:space-between;align-items:center;padding-top:24px;
+                  border-top:1px solid var(--border-hairline);font-size:12px;color:var(--fg-3)}
+  .footer__legal{display:flex;gap:24px}
+  .footer__legal a{color:var(--fg-3)}
+
+  /* ===================== Responsive ===================== */
+  @media(max-width:960px){
+    .container{padding:0 24px}
+    .tech-hero__content{grid-template-columns:1fr;gap:48px}
+    .tech-hero__h1{font-size:52px}
+    .how-grid{grid-template-columns:1fr;gap:48px}
+    .diagram{position:static}
+    .stat-grid{grid-template-columns:1fr}
+    .study-grid{grid-template-columns:1fr}
+    .material-grid{grid-template-columns:1fr;gap:40px}
+    .tech-cta__inner{grid-template-columns:1fr;gap:32px;padding:40px}
+    .tech-cta__h{font-size:36px}
+    .footer__newsletter{grid-template-columns:1fr;gap:32px}
+    .footer__cols{grid-template-columns:1fr 1fr;gap:32px}
+  }
+  @media(max-width:600px){
+    .nav__links{display:none}
+    .tech-hero__h1{font-size:40px}
+    .how-section__head h2{font-size:38px}
+    .proof-section__head h2{font-size:40px}
+    .stat-card__num{font-size:60px}
+    .footer__cols{grid-template-columns:1fr}
+  }
+
+  @media(prefers-reduced-motion:no-preference){
+    @keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+    .rise{animation:riseIn .9s var(--ease) both}
+    .rise--1{animation-delay:.05s}
+    .rise--2{animation-delay:.2s}
+    .rise--3{animation-delay:.36s}
+    .rise--4{animation-delay:.5s}
+
+    @keyframes countUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+    .count-anim{animation:countUp 1s var(--ease) both}
+  }
+</style>
+</head>
+<body>
+
+<!-- ======================= NAV ======================= -->
+<nav id="nav" class="nav nav--over-hero">
+  <div class="container nav__inner">
+    <div style="display:flex;align-items:center;gap:36px">
+      <a class="wordmark" href="index.html">AÉRIA</a>
+      <div class="nav__links">
+        <a class="nav__link" href="product.html">Shop · 스타킹</a>
+        <a class="nav__link nav__link--active" href="technology.html">Technology · 기술</a>
+        <a class="nav__link" href="crew.html">Ambassadors · 앰버서더</a>
+        <a class="nav__link" href="#">App · 앱</a>
+        <a class="nav__link" href="#">Journal</a>
+      </div>
+    </div>
+    <div class="nav__actions">
+      <button class="nav__icon" aria-label="Search">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg>
+      </button>
+      <button class="nav__icon" aria-label="Account">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </button>
+      <button class="nav__icon nav__bag" aria-label="Bag">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="nav__bag-count">2</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ======================= TECH HERO ======================= -->
+<section class="tech-hero">
+  <div class="tech-hero__grain"></div>
+  <div class="tech-hero__orb tech-hero__orb--1"></div>
+  <div class="tech-hero__orb tech-hero__orb--2"></div>
+
+  <div class="container tech-hero__content">
+    <!-- Left -->
+    <div class="tech-hero__left">
+      <div class="tech-hero__tag rise rise--1">
+        <div class="tech-hero__dot"></div>
+        <span class="eyebrow eyebrow--light">Gradient Compression · 그레이디언트 컴프레션</span>
+      </div>
+      <h1 class="tech-hero__h1 rise rise--2">
+        발목에서 허벅지까지,<br/>
+        <em>단계적으로.</em><br/>
+        <em>정밀하게.</em>
+      </h1>
+      <p class="tech-hero__desc rise rise--3">
+        일반 압박 스타킹은 균일한 압력을 가합니다. AÉRIA는 다릅니다. 혈액이 심장으로 돌아가는 방향을 따라, 압박을 단계적으로 낮춥니다 — Graduated compression, engineered for the crew who can't sit down.
+      </p>
+      <div class="tech-hero__actions rise rise--3">
+        <a href="product.html" class="btn btn--light btn--lg">
+          Long-Haul 40D 구매
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+        <button class="btn btn--darkghost btn--lg" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">원리 더 보기</button>
+      </div>
+    </div>
+
+    <!-- Right: key metrics -->
+    <div class="tech-hero__metrics rise rise--4">
+      <div class="tech-metric">
+        <div>
+          <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(252,251,248,.45);margin-bottom:8px">Ankle · 발목</div>
+          <div class="tech-metric__val">22<em>mmHg</em></div>
+        </div>
+        <svg viewBox="0 0 80 24" width="80" height="24" fill="none">
+          <rect x="0" y="8" width="80" height="8" rx="4" fill="rgba(184,134,90,.25)"/>
+          <rect x="0" y="8" width="80" height="8" rx="4" fill="url(#barMax)"/>
+          <defs><linearGradient id="barMax" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#B8865A"/><stop offset="100%" stop-color="#DCB88F"/></linearGradient></defs>
+        </svg>
+      </div>
+      <div class="tech-metric">
+        <div>
+          <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(252,251,248,.45);margin-bottom:8px">Calf · 종아리</div>
+          <div class="tech-metric__val">18<em>mmHg</em></div>
+        </div>
+        <svg viewBox="0 0 80 24" width="80" height="24" fill="none">
+          <rect x="0" y="8" width="80" height="8" rx="4" fill="rgba(255,255,255,.08)"/>
+          <rect x="0" y="8" width="65" height="8" rx="4" fill="rgba(220,184,143,.6)"/>
+        </svg>
+      </div>
+      <div class="tech-metric">
+        <div>
+          <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(252,251,248,.45);margin-bottom:8px">Knee · 무릎</div>
+          <div class="tech-metric__val">15<em>mmHg</em></div>
+        </div>
+        <svg viewBox="0 0 80 24" width="80" height="24" fill="none">
+          <rect x="0" y="8" width="80" height="8" rx="4" fill="rgba(255,255,255,.08)"/>
+          <rect x="0" y="8" width="54" height="8" rx="4" fill="rgba(220,184,143,.45)"/>
+        </svg>
+      </div>
+      <div class="tech-metric">
+        <div>
+          <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(252,251,248,.45);margin-bottom:8px">Thigh · 허벅지</div>
+          <div class="tech-metric__val">12<em>mmHg</em></div>
+        </div>
+        <svg viewBox="0 0 80 24" width="80" height="24" fill="none">
+          <rect x="0" y="8" width="80" height="8" rx="4" fill="rgba(255,255,255,.08)"/>
+          <rect x="0" y="8" width="43" height="8" rx="4" fill="rgba(220,184,143,.3)"/>
+        </svg>
+      </div>
+      <div style="padding:16px 28px 20px;border-top:1px solid rgba(255,255,255,.08)">
+        <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(252,251,248,.35);margin-bottom:6px">Certification</div>
+        <div style="font-size:13px;color:rgba(252,251,248,.72)">ISO 8612 · EN 13561 · Graduated class II</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= HOW IT WORKS ======================= -->
+<section class="how-section" id="how">
+  <div class="container">
+    <div class="how-section__head">
+      <span class="eyebrow">Mechanism · 작동 원리</span>
+      <h2>왜 단계적 압박인가.</h2>
+      <p>
+        장시간 비행 중 서 있거나 앉아 있으면 중력에 의해 혈액과 체액이 하체, 특히 발목에 집중됩니다. 이때 발목에 가장 강한 압박을 주고 위로 올라갈수록 낮추면, 정맥 혈류가 심장 방향으로 자연스럽게 흐르도록 유도됩니다. AÉRIA Long-Haul 40D는 이 원리를 ISO 8612 기준에 맞게 구현했습니다.
+      </p>
+    </div>
+
+    <div class="how-grid">
+      <!-- Zone cards -->
+      <div class="zone-list">
+        <div class="zone-card">
+          <div class="zone-card__header">
+            <span class="zone-card__name">Ankle · 발목</span>
+            <div class="zone-card__mmhg">22<span>mmHg</span></div>
+          </div>
+          <div class="zone-card__bar-wrap">
+            <div class="zone-card__bar" style="width:100%;background:var(--amber)"></div>
+          </div>
+          <p class="zone-card__desc">
+            체액 부종이 가장 먼저, 가장 심하게 나타나는 부위입니다. 22 mmHg의 최대 압박으로 체액이 쌓이지 않도록 막고 정맥을 강하게 지지합니다. 동급 제품 중 최고 수준의 발목 압박입니다.
+          </p>
+        </div>
+        <div class="zone-card">
+          <div class="zone-card__header">
+            <span class="zone-card__name">Calf · 종아리</span>
+            <div class="zone-card__mmhg">18<span>mmHg</span></div>
+          </div>
+          <div class="zone-card__bar-wrap">
+            <div class="zone-card__bar" style="width:82%"></div>
+          </div>
+          <p class="zone-card__desc">
+            6시간 이후 부종이 두 번째로 집중되는 부위. 18 mmHg로 종아리 근육을 지지하고, 혈액이 발목에서 무릎으로 이동하도록 돕습니다. 근육 피로도를 줄이는 핵심 존입니다.
+          </p>
+        </div>
+        <div class="zone-card">
+          <div class="zone-card__header">
+            <span class="zone-card__name">Knee · 무릎</span>
+            <div class="zone-card__mmhg">15<span>mmHg</span></div>
+          </div>
+          <div class="zone-card__bar-wrap">
+            <div class="zone-card__bar" style="width:68%;background:var(--amber-3)"></div>
+          </div>
+          <p class="zone-card__desc">
+            관절 굴곡이 일어나는 무릎 위에서 압박을 15 mmHg로 완화합니다. 움직임을 제한하지 않으면서도 혈류의 흐름을 이어받아 허벅지 방향으로 유도합니다.
+          </p>
+        </div>
+        <div class="zone-card">
+          <div class="zone-card__header">
+            <span class="zone-card__name">Thigh · 허벅지</span>
+            <div class="zone-card__mmhg">12<span>mmHg</span></div>
+          </div>
+          <div class="zone-card__bar-wrap">
+            <div class="zone-card__bar" style="width:55%;background:rgba(184,134,90,.4)"></div>
+          </div>
+          <p class="zone-card__desc">
+            최소 압박으로 착용 편의성을 유지하면서 혈류의 마지막 경로를 지지합니다. 허벅지가 과도하게 조여지지 않아 착용 후에도 게이트에서 자연스럽게 움직일 수 있습니다.
+          </p>
+        </div>
+      </div>
+
+      <!-- Diagram (sticky) -->
+      <div class="diagram">
+        <div class="diagram__head">
+          <div class="diagram__title">Long-Haul 40D · gradient map</div>
+          <div class="diagram__sub">ISO 8612 · graduated</div>
+        </div>
+        <svg class="diagram__svg" viewBox="0 0 560 620" aria-label="Compression zones diagram — ankle 22 mmHg to thigh 12 mmHg">
+          <defs>
+            <linearGradient id="legGrad2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#EDE7DC"/>
+              <stop offset="55%" stop-color="#DCB88F" stop-opacity=".55"/>
+              <stop offset="100%" stop-color="#B8865A" stop-opacity=".85"/>
+            </linearGradient>
+          </defs>
+          <g transform="translate(70,10)">
+            <path d="M175 20 C 165 90, 155 180, 153 260 C 151 360, 158 450, 170 530 L 195 580 L 225 580 L 240 530 C 252 450, 258 360, 256 260 C 254 180, 244 90, 234 20 Z"
+                  fill="url(#legGrad2)" stroke="#0E1B2C" stroke-width="1" stroke-opacity=".35"/>
+            <g stroke="#0E1B2C" stroke-opacity=".22" fill="none" stroke-width="1">
+              <path d="M158 80 Q 200 74, 240 80"/>
+              <path d="M155 160 Q 200 154, 245 160"/>
+              <path d="M153 240 Q 200 234, 248 240"/>
+              <path d="M152 320 Q 200 314, 250 320"/>
+              <path d="M155 400 Q 200 394, 248 400"/>
+              <path d="M160 470 Q 200 464, 243 470"/>
+              <path d="M172 530 Q 200 524, 230 530"/>
+            </g>
+          </g>
+          <g font-family="'Pretendard', sans-serif" font-size="11" letter-spacing=".16em" fill="#64748B">
+            <g>
+              <line x1="30" y1="85" x2="540" y2="85" stroke="#0E1B2C" stroke-opacity=".18" stroke-dasharray="2 4"/>
+              <text x="30" y="77" text-transform="uppercase">Thigh · 허벅지</text>
+              <text x="540" y="77" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="13" fill="#0E1B2C" letter-spacing="0">12 mmHg</text>
+            </g>
+            <g>
+              <line x1="30" y1="215" x2="540" y2="215" stroke="#0E1B2C" stroke-opacity=".18" stroke-dasharray="2 4"/>
+              <text x="30" y="207" text-transform="uppercase">Knee · 무릎</text>
+              <text x="540" y="207" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="13" fill="#0E1B2C" letter-spacing="0">15 mmHg</text>
+            </g>
+            <g>
+              <line x1="30" y1="360" x2="540" y2="360" stroke="#0E1B2C" stroke-opacity=".18" stroke-dasharray="2 4"/>
+              <text x="30" y="352" text-transform="uppercase">Calf · 종아리</text>
+              <text x="540" y="352" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="13" fill="#0E1B2C" letter-spacing="0">18 mmHg</text>
+            </g>
+            <g>
+              <line x1="30" y1="500" x2="540" y2="500" stroke="#B8865A" stroke-opacity=".9" stroke-width="1.25"/>
+              <text x="30" y="492" text-transform="uppercase" fill="#9A6E44">Ankle · 발목</text>
+              <text x="540" y="492" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="13" fill="#9A6E44" letter-spacing="0">22 mmHg · max</text>
+            </g>
+          </g>
+          <g transform="translate(460,40)">
+            <rect x="-6" y="0" width="24" height="540" rx="2" fill="#FCFBF8" stroke="#0E1B2C" stroke-opacity=".12"/>
+            <rect x="-6" y="470" width="24" height="70" rx="2" fill="#B8865A" fill-opacity=".85"/>
+            <rect x="-6" y="330" width="24" height="140" rx="2" fill="#DCB88F" fill-opacity=".75"/>
+            <rect x="-6" y="190" width="24" height="140" rx="2" fill="#DCB88F" fill-opacity=".5"/>
+            <rect x="-6" y="60"  width="24" height="130" rx="2" fill="#DCB88F" fill-opacity=".3"/>
+          </g>
+        </svg>
+        <div class="diagram__legend">
+          <span><strong>Graduated zones</strong> · 4단계 그레이디언트</span>
+          <span>Meryl&reg; micro 78% / elastane 22%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= PROOF DATA ======================= -->
+<section class="proof-section">
+  <div class="container">
+    <div class="proof-section__head">
+      <span class="eyebrow eyebrow--light">Clinical Evidence · 임상 데이터</span>
+      <h2>숫자가 말하는 차이.</h2>
+      <p>412명의 현직 승무원과 함께 3년간 진행한 착용 실험과 독립 임상 연구 결과입니다.</p>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-card__num">−24<em>%</em></div>
+        <div class="stat-card__label">발목 부종 감소율<br/>Ankle swelling reduction</div>
+        <div class="stat-card__sub">vs. 미착용 · 14h flight · n=68</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__num">+3<em>%</em></div>
+        <div class="stat-card__label">착용 시 발목 부종<br/>Swelling w/ AÉRIA</div>
+        <div class="stat-card__sub">vs. 미착용 +28% · same duty · n=68</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__num">412</div>
+        <div class="stat-card__label">앰버서더 승무원<br/>Crew ambassadors tested</div>
+        <div class="stat-card__sub">KE · OZ · LJ · BR · 2022–2024</div>
+      </div>
+    </div>
+
+    <div class="study-grid">
+      <div class="study-card">
+        <div class="study-card__tag">Edema · 부종</div>
+        <div class="study-card__finding">"14시간 비행 후 발목 부종 +3% — 미착용 대비 9배 차이"</div>
+        <div class="study-card__detail">ICN–JFK 노선(14h 25m) 동일 승무원 교차 착용 실험. 미착용 시 +28%, AÉRIA 착용 시 +3% 증가. 측정 도구: 발목 둘레 테이프법 + 초음파 피부 두께 측정.</div>
+        <div class="study-card__source">AÉRIA Internal Study · 2023 · n=68 · ICN–JFK KE081</div>
+      </div>
+      <div class="study-card">
+        <div class="study-card__tag">Fatigue · 피로도</div>
+        <div class="study-card__finding">"비행 후 하지 피로감 VAS 점수 38% 감소"</div>
+        <div class="study-card__detail">시각적 통증 척도(VAS 0–10)를 이용한 주관적 피로감 자기보고. 착용 전 평균 6.8 → 착용 후 평균 4.2. 통계적 유의성 p &lt; 0.01.</div>
+        <div class="study-card__source">AÉRIA Internal Study · 2023 · n=112 · Multiple routes</div>
+      </div>
+      <div class="study-card">
+        <div class="study-card__tag">DVT Risk · 혈전 예방</div>
+        <div class="study-card__finding">"정맥 혈류 속도 평균 22% 향상 확인"</div>
+        <div class="study-card__detail">도플러 초음파를 사용한 대복재정맥(GSV) 혈류 속도 측정. Class II 압박(22 mmHg)은 장시간 비행 중 DVT 예방에 권장되는 수준입니다. ESC 가이드라인 2023 참조.</div>
+        <div class="study-card__source">Independent Lab · Seoul · 2024 · n=40</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= MATERIAL ======================= -->
+<section class="material-section">
+  <div class="container">
+    <div class="material-grid">
+      <div class="material-copy">
+        <span class="eyebrow">Materials · 소재</span>
+        <h2>이탈리아에서 짠 원단.<br/>서울에서 설계한 압박.</h2>
+        <p>
+          압박의 지속성은 원사의 탄성력에서 결정됩니다. AÉRIA는 이탈리아 Nylstar 사의 Meryl® Microfiber와 독일산 Lycra® 엘라스테인을 사용합니다. 일반 나일론보다 3배 강한 인장 강도를 가지며, 150회 세탁 후에도 압박력이 95% 유지됩니다.
+        </p>
+        <p>
+          40D 밀도는 피부에 가볍게 밀착되면서도 14시간 착용 후 흘러내리거나 말리지 않습니다. 메쉬 통기 구조는 기내 저습도(20% RH) 환경에서도 쾌적함을 유지합니다.
+        </p>
+        <div class="cert-row">
+          <span class="cert-badge">OEKO-TEX® Std 100</span>
+          <span class="cert-badge">ISO 8612</span>
+          <span class="cert-badge">EN 13561</span>
+          <span class="cert-badge">피부 자극 테스트</span>
+        </div>
+      </div>
+      <div class="material-specs">
+        <div class="material-row">
+          <div class="material-key">원사</div>
+          <div class="material-val"><strong>Meryl® Microfiber</strong> · Nylstar, Italy<br/><span style="font-size:13px;color:var(--fg-3)">Nylon 6.6 · 78%</span></div>
+        </div>
+        <div class="material-row">
+          <div class="material-key">탄성사</div>
+          <div class="material-val"><strong>Lycra® T400</strong> · INVISTA<br/><span style="font-size:13px;color:var(--fg-3)">Elastane · 22%</span></div>
+        </div>
+        <div class="material-row">
+          <div class="material-key">데니어</div>
+          <div class="material-val"><strong>40D</strong> · 종일 착용 최적화</div>
+        </div>
+        <div class="material-row">
+          <div class="material-key">압박력 유지</div>
+          <div class="material-val"><strong>150회 세탁 후 95%</strong> 유지</div>
+        </div>
+        <div class="material-row">
+          <div class="material-key">최대 신장</div>
+          <div class="material-val"><strong>300%</strong> 후 원형 복원</div>
+        </div>
+        <div class="material-row">
+          <div class="material-key">생산지</div>
+          <div class="material-val"><strong>이탈리아</strong> · Castel Goffredo 지역</div>
+        </div>
+        <div class="material-row">
+          <div class="material-key">인증</div>
+          <div class="material-val"><strong>OEKO-TEX® Standard 100</strong> · 유해물질 불검출</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= CTA ======================= -->
+<section class="tech-cta">
+  <div class="container">
+    <div class="tech-cta__inner">
+      <div>
+        <span class="eyebrow eyebrow--light">Shop · 구매</span>
+        <h2 class="tech-cta__h">기술을 직접 경험하세요.</h2>
+        <p class="tech-cta__p">Long-Haul 40D는 현재 412명의 앰버서더가 실제 비행에서 착용하고 있습니다. 30일 착용 후 만족하지 못하면 전액 환불합니다.</p>
+      </div>
+      <div class="tech-cta__actions">
+        <a href="product.html" class="btn btn--light btn--lg">
+          Long-Haul 40D 구매 · ₩89,000
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+        <a href="crew.html" class="btn btn--darkghost btn--lg">앰버서더 후기 보기</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= FOOTER ======================= -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__newsletter">
+      <div>
+        <span class="eyebrow">Stay close · 뉴스레터</span>
+        <div class="footer__nl-h">Field notes from the galley.<br/>월 1회. 광고 없이.</div>
+      </div>
+      <form class="footer__form" onsubmit="event.preventDefault()">
+        <input class="footer__input" type="email" placeholder="crew@airline.com"/>
+        <button class="btn btn--primary btn--md" type="submit">
+          Subscribe
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+      </form>
+    </div>
+    <div class="footer__cols">
+      <div>
+        <a class="footer__brand-logo" href="index.html" style="text-decoration:none">AÉRIA</a>
+        <p class="footer__brand-p">Compression for working cabin crew. Engineered in Seoul, knitted in Italy, tested on the red-eye.</p>
+        <div class="footer__social">
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="18" cy="6" r="1" fill="currentColor"/></svg></a>
+          <a href="#" aria-label="KakaoTalk"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5z"/></svg></a>
+          <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="m10 9 5 3-5 3z"/></svg></a>
+        </div>
+      </div>
+      <div class="footer__col">
+        <h4>Shop · 쇼핑</h4>
+        <ul>
+          <li><a href="product.html">Long-Haul 40D</a></li>
+          <li><a href="product.html">Red-Eye 60/40</a></li>
+          <li><a href="product.html">Everyday 30D</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Crew · 크루</h4>
+        <ul>
+          <li><a href="crew.html">Ambassadors</a></li>
+          <li><a href="#">Journal</a></li>
+          <li><a href="crew.html#apply-section">Apply · 지원</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Help · 고객센터</h4>
+        <ul>
+          <li><a href="#">FAQ</a></li>
+          <li><a href="mailto:help@aeria.kr">Contact · help@aeria.kr</a></li>
+          <li><a href="#">Returns · 환불</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <div>© 2025 AÉRIA Inc · 서울특별시 강남구 도산대로 · 사업자등록번호 123-45-67890</div>
+      <div class="footer__legal">
+        <a href="#">Privacy · 개인정보</a>
+        <a href="#">Terms · 이용약관</a>
+        <a href="#">Accessibility</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const nav = document.getElementById('nav');
+  const onScroll = () => {
+    if (window.scrollY > 48) {
+      nav.classList.remove('nav--over-hero');
+      nav.classList.add('nav--scrolled');
+    } else {
+      nav.classList.add('nav--over-hero');
+      nav.classList.remove('nav--scrolled');
+    }
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+</body>
+</html>

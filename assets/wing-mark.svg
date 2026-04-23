@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 16" role="img" aria-label="wing mark">
+  <g fill="none" stroke="#0E1B2C" stroke-width="1" stroke-linecap="round">
+    <path d="M2 10 C 14 4, 24 4, 46 10"></path>
+    <path d="M4 12 C 16 8, 26 8, 44 12" opacity="0.5"></path>
+  </g>
+</svg>
